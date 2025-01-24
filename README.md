@@ -1,13 +1,30 @@
 <div align=center>
 <!-- <h1>Avatar: Agent-based Virtual Approach to Large Scale Recommendation Simulation</h1> -->
 
-<h1>On Softmax Direct Preference Optimization for Recommendation</h1>
+<h1>On Negative-aware Preference Optimization for
+Recommendation</h1>
 
 <img src="https://img.shields.io/badge/License-MIT-blue" alt="license">
 
 ![world](assets/framework.png)
 
-Recommender systems aim to predict personalized rankings based on user preference data. With the rise of Language Models (LMs), LM-based recommenders have been widely explored due to their extensive world knowledge and powerful reasoning abilities. Most of the LM-based recommenders convert historical interactions into language prompts, pairing with a positive item as the target response and fine-tuning LM with a language modeling loss. However, the current objective fails to fully leverage preference data and is not optimized for personalized ranking tasks, which hinders the performance of LM-based recommenders. Inspired by the current advancement of Direct Preference Optimization (DPO) in human preference alignment and the success of softmax loss in recommendations, we propose Softmax-DPO (S-DPO) to instill ranking information into the LM to help LM-based recommenders distinguish preferred items from negatives, rather than solely focusing on positives. Specifically, we incorporate multiple negatives in user preference data and devise an alternative version of DPO loss tailored for LM-based recommenders, connected to softmax sampling strategies. Theoretically, we bridge S-DPO with the softmax loss over negative sampling and find that it has a side effect of mining hard negatives, which assures its exceptional capabilities in recommendation tasks. Empirically, extensive experiments conducted on three real-world datasets demonstrate the superiority of S-DPO to effectively model user preference and further boost recommendation performance while mitigating the data likelihood decline issue of DPO.
+In recommendation systems, negative samples — often abundant
+but underutilized — hold significant potential for improving model
+performance. In this paper, we propose Negative-Aware Prefer-
+ence Optimization for Recommendation (NAPO), which addresses
+the challenge of effectively utilizing the abundant negative sig-
+nals. NAPO extends existing approaches by incorporating multiple
+negative samples, enriching the training signal and facilitating
+better ranking information. To further enhance negative sample
+utilization, we introduce a novel strategy for sharing unobserved
+samples across similar users, which expands the negative sample
+space without increasing computational overhead. Additionally, we
+propose a dynamic, personalized reward margin that adjusts based
+on individual user preferences, enabling more effective exploitation
+of reliable negatives. Experimental evaluations demonstrate that
+NAPO significantly outperforms existing methods, highlighting
+the benefits of increasing both the quantity and quality of negative
+samples in recommendation tasks.
 
 </div>
 

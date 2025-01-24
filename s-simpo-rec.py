@@ -55,7 +55,6 @@ def train(
     sample_neg_type = "high",
     batch_shared=True,
 ):
-    #os.environ['WANDB_PROJECT'] = wandb_project # 指定wandb 项目名称
     data_files = { 
         "train": f"./data/{dataset}-sft-cans20/{dataset}-train.json",
         "validation": f"./data/{dataset}-sft-cans20/{dataset}-val.json",
@@ -192,8 +191,7 @@ def train(
         elif sort_type == "seq_logits":
             emb1 = seq_logits[ids1]
             emb2 = seq_logits[ids2]
-        # 计算批量的点积
-        return torch.matmul(emb1, emb2.T)  # 结果是一个矩阵，表示所有向量之间的点积
+        return torch.matmul(emb1, emb2.T)  
 
     def calculate_similarity(ids1, ids2):
         if sort_type == "item_embedding": 
@@ -213,8 +211,8 @@ def train(
         max_prompt_length=cutoff_len,
         max_length=cutoff_len,
         # rec_model = sasrec_model,
-        alpha1=alpha1, # alpha1 调节M
-        alpha2=alpha2, # alpha2 调节A
+        alpha1=alpha1, 
+        alpha2=alpha2,
         move_ratio=move_ratio, # m
         batch_shared=batch_shared,
         similarity_score = similarity_score,

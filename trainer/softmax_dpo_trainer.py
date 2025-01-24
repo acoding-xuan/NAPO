@@ -220,7 +220,6 @@ class DPOTrainer(Trainer):
         Returns:
             A dictionary containing the concatenated inputs under the key 'concatenated_input_ids'.
         """
-        # 把 chosen 和 rejected response 拼接起来
         rejected_max_len = max([batch[key].shape[1] for key in batch if key.startswith("rejected") and key.endswith("_input_ids")])
         max_length = max(batch["chosen_input_ids"].shape[1], rejected_max_len)
         concatenated_batch = {}
@@ -397,9 +396,7 @@ class DPOTrainer(Trainer):
             self.M_mean.mul_(move_ratio).add_(M_local.mean(), alpha=1-move_ratio)
             #self.A_mean.mul_(move_ratio).add_(A_local.mean(), alpha=1-move_ratio)
             #self.m_std.mul_(move_ratio).add_(batch_gap_std, alpha=1-move_ratio)
-            # 如果使用了分布式训练，同步loss_mean
             if self.world_size > 1:
-                # 我们使用SUM操作进行all_reduce，然后将结果除以世界大小来取平均
                 dist.all_reduce(self.M_mean, op=dist.ReduceOp.SUM)
                 #dist.all_reduce(self.A_mean, op=dist.ReduceOp.SUM)
                 #dist.all_reduce(self.m_std, op=dist.ReduceOp.SUM)
@@ -437,40 +434,28 @@ class DPOTrainer(Trainer):
             neg_logits = torch.stack(neg_logits, dim=0).T.contiguous()
             rec_score_rejected, neg_logits, all_dataset_ids = self.update_and_sync_neg_sample(rec_score_rejected, neg_logits, dataset_ids)
             neg_accept_ratio = self.neg_accept_ratio
-            # 批量计算所有的相似度
             similarity_matrix = self.similarity_score(dataset_ids, all_dataset_ids)
-            # 预先分配输出列表
             rec_scores_rej_list = []
             neg_logits_rej_list = []
-            # 批量处理每个样本
             num_to_take = int(neg_accept_ratio * (len(all_dataset_ids) - 1))
-            for i, dataset_ids_i in enumerate(dataset_ids):  # 这里不再需要 .tolist()
-                # 获取当前样本与所有样本的相似度
+            for i, dataset_ids_i in enumerate(dataset_ids): 
                 scores_others = similarity_matrix[i]
-                # 将当前样本的相似度设置为负无穷，确保不会选择自己
-                #k = indices = (tensor == value).nonzero(as_tuple=True)[0]
-                # 找到对应元素的位置
                 k = (all_dataset_ids == dataset_ids_i.item()).nonzero(as_tuple=True)[0]
                 #k = all_dataset_ids.index(dataset_ids_i)
                 scores_others[k] = float('-inf')
-                # 使用 torch.argsort() 对相似度进行排序
                 sorted_indices = torch.argsort(scores_others, descending=True)
                 top_k_indices = sorted_indices[:num_to_take]
-                # 提取对应的 rec_scores 和 neg_logits
                 rec_scores_rej = [rec_score_rejected[i]]
                 neg_logits_rej = [neg_logits[i]]
-                # 使用 top_k_indices 获取排序后的 rec_scores_rej_others 和 neg_logits_rej_others
                 sorted_rec_scores_rej_others = rec_score_rejected[top_k_indices]
                 sorted_neg_logits_rej_others = neg_logits[top_k_indices]
 
                 rec_scores_rej.extend(sorted_rec_scores_rej_others)
                 neg_logits_rej.extend(sorted_neg_logits_rej_others)
                 
-                # 将结果添加到列表中
                 rec_scores_rej_list.append(torch.cat(rec_scores_rej, dim=0))
                 neg_logits_rej_list.append(torch.cat(neg_logits_rej, dim=0))
 
-            # 使用 torch.stack 一次性合并结果
             try:
                 rec_scores_rej = torch.stack(rec_scores_rej_list)
                 neg_logits_rej = torch.stack(neg_logits_rej_list)
@@ -505,7 +490,6 @@ class DPOTrainer(Trainer):
                     A,
             
         )
-        # reward_accuracies 记录 chosen 比所有 rejected 的收益都大的比例是多少
         reward_accuracies = None
         for key in rejected_rewards:
             if reward_accuracies is None:

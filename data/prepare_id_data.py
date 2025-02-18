@@ -8,15 +8,6 @@ from tqdm import tqdm
 import torch
 from rec_models import SASRec
 
-# import debugpy
-# try:
-#     # 5678 is the default attach port in the VS Code debug configurations. Unless a host and port are specified, host defaults to 127.0.0.1
-#     debugpy.listen(("localhost", 9501))
-#     print("Waiting for debugger attach")
-#     debugpy.wait_for_client()
-# except Exception as e:
-#     pass
-
 
 def rec_rank(his_seq_ids, neg_seq_ids):
     #his_seq_ids = [name2id[i] for i in historyList]
@@ -25,7 +16,6 @@ def rec_rank(his_seq_ids, neg_seq_ids):
     import torch.nn.functional as F
     padded_his_seq_ids_tensor = F.pad(his_seq_ids_tensor, (0, 10 - his_seq_ids_tensor.size(1)), 'constant', dataset.padding_item_id).cuda(0)
     #neg_seq_ids_tensor = torch.tensor(neg_seq_ids).unsqueeze(0).cuda(0)
-    ## 载入 sasrec 模型并对所有的item ids 进行排序
     state = torch.tensor(len(his_seq_ids)).reshape(-1).cuda(0)
     scores = sasrec_model.forward_eval(padded_his_seq_ids_tensor, state)
     #print(scores.shape)
@@ -49,7 +39,7 @@ if __name__ == "__main__":
     for name, param in sasrec_model.named_parameters():
         param.requires_grad = False
     # 载入id2name
-    splits = ["val", "test"]
+    splits = ["train", "val", "test"]
 
     #splits = ["val", "test"]
     cans_num = 20
@@ -83,14 +73,12 @@ if __name__ == "__main__":
                     negative_items_ids.append(item_ids)
        
             negative_items = [item for item in itemList if item != trueSelection]
-            sorted_neg_items, scores_of_sorted_neg_items, avg_item_embedding, seq_logits  = rec_rank(dataset[i]["seq"], negative_items_ids)
-            # 计算 item-embedding 的 avg
-            # 记录 seq 的 vector
+            sorted_neg_items, scores_of_sorted_neg_items, avg_item_embedding, seq_logits = rec_rank(dataset[i]["seq"], negative_items_ids)
             dic = {
                 "historyList": dataset[i]["movie_seq"],
                 "itemList": dataset[i]["cans_name"],
                 "trueSelection": dataset[i]["next_title"],
-                "seq": dataset[i]["seq"].tolist(), # tensor 是不能直接转为json的所以要进行进一步的处理
+                "seq": dataset[i]["seq"].tolist(),
                 "cans": dataset[i]["cans"].tolist(),
                 "item_id": dataset[i]["next_id"].tolist(),
                 "sorted_neg_items": sorted_neg_items,

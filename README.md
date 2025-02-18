@@ -51,26 +51,30 @@ Our experiments have been tested on **Python 3.9.7 with PyTorch 2.2.2+cu117**.
 
 <p id="Quick-Start"></p> 
 
+## Step 2. Dataset process
+By running the following command, you will start preparing the dataset.
+```bash
+cd ./data
+python prepare_id_data.py
+```
+
 ## ⌛️ Quick Start
-
-We provide a sample data of **LastFM** in ./data folder. Further processing can refer to data_interface.py.
-
 By running the following command, you will start run **Supervised Fine-Tuning** on language model based recommenders.
+
 ```bash
 bash sft.sh
 ```
 
-By running the following command, you will start run **Direct Preference Optimization** on language model based recommenders.
-```bash
-bash dpo.sh
-```
 
 By running the following command, you will start run **Softmax Direct Preference Optimization** on language model based recommenders.
 ```bash
-bash softmax_dpo.sh
+bash napo.sh
 ```
 
 By running the following command, you will start run **Inference** to get the performance metrics.
 ```bash
 bash inference.sh
 ```
+
+## Acknowledgment
+Our code is based on  [``SDPO``](https://github.com/chenyuxin1999/S-DPO).

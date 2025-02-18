@@ -59,16 +59,6 @@ def train(
         "train": f"./data/{dataset}-sft-cans20/{dataset}-train.json",
         "validation": f"./data/{dataset}-sft-cans20/{dataset}-val.json",
     }
-    print(sample_neg_type)
-    print("gamma : ", gamma)
-    print("alpha1 : ", alpha1)
-    print("sort_type : ", sort_type)
-    print("neg_accept_ratio : ", neg_accept_ratio)
-    print("move_ratio : ", move_ratio)
-    print("beta : ", beta)
-    print("neg_num : ", neg_num)
-    print("batch_shared : ", batch_shared)
-    print("cutoff_len", cutoff_len)
     def convert_dict_to_prompt(d:dict):
         t = Prompt(prompt_path)
         d["historyList"] = d["historyList"].split("::") if isinstance(d["historyList"], str) else d["historyList"]
@@ -109,7 +99,7 @@ def train(
 
     
     def model_init():
-        device_index = Accelerator().process_index # 创建一个 Accelerator 对象，并调用其 process_index 属性来获取当前进程的索引。
+        device_index = Accelerator().process_index 
         device_map = {"": device_index}
             
         bnb_config = BitsAndBytesConfig(

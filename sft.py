@@ -1,10 +1,4 @@
 import os
-os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
-os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1, 6, 7"
-
-#import os
-#os.environ["OMP_NUM_THREADS"] = "1"
-#os.environ["MKL_NUM_THREADS"] = "1"
 
 import torch
 import re
@@ -68,8 +62,8 @@ def train(
 
     
     data_files = {
-        "train": "./sample_data/lastfm-sft-cans20/lastfm-train.json",
-        "validation": "./sample_data/lastfm-sft-cans20/lastfm-val.json",
+        "train": "./data/lastfm-sft-cans20/lastfm-train.json",
+        "validation": "./data/lastfm-sft-cans20/lastfm-val.json",
     }
     
     data = load_dataset("json", data_files=data_files)

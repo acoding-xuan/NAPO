@@ -20,8 +20,8 @@ do
                         echo "Running with dataset: $dataset, gamma: $gamma, alpha1: $alpha1, neg_accept_ratio: $neg_accept_ratio, batch_shared: $batch_shared, neg_num: $neg_num"
                         torchrun --nproc_per_node 4 --master_port=25971 napo.py \
                             --dataset $dataset \
-                            --model_name xxx \
-                            --resume_from_checkpoint ./output/${dataset}/sft/final_checkpoint \
+                            --model_name base_model_path \
+                            --resume_from_checkpoint ref_model_ckpt_path \
                             --batch_size 4 \
                             --gradient_accumulation_steps 8 \
                             --prompt_path ./prompt/${prompt}.txt \
@@ -36,7 +36,7 @@ do
                             --num_train_epochs 3 \
                             --logging_dir ./log/ \
                             --output_dir ./output/${dataset}/ \
-                            --wandb_project simpo-ob-random \
+                            --wandb_project xxx \
                             --sample_neg_type random \
                             --neg_accept_ratio $neg_accept_ratio \
                             --wandb_name xxx \

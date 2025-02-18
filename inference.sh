@@ -5,5 +5,5 @@ torchrun --nproc_per_node 1 --master_port=25688 \
         --dataset lastfm \
         --external_prompt_path ./prompt/music.txt \
         --batch_size 32 \
-        --base_model /NAS/liudx/LLM/llama_model/models--meta-llama--Llama-2-7b-hf/snapshots/01c7f73d771dfac7d292323805ebc428287df4f9 \
-        --resume_from_checkpoint xxx \
+        --base_model base_model \
+        --resume_from_checkpoint ckpt_path \
